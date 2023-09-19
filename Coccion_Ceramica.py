@@ -1,6 +1,3 @@
-Para permitir que los usuarios ingresen la hora en formato AM o PM en lugar de la cantidad de horas, puedes utilizar un control de entrada de texto para la hora y luego convertir esa entrada en un valor numérico. Aquí tienes el código modificado:
-
-```python
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -57,6 +54,3 @@ if 'data' in st.session_state:
     # Calcular el tiempo total de cocción en horas
     total_cooking_time = st.session_state.data['Hora'].max() - st.session_state.data['Hora'].min()
     st.write(f'Tiempo Total de Cocción en Horas: {total_cooking_time:.3f} horas')
-```
-
-Con este código, los usuarios pueden ingresar la hora en formato AM/PM (por ejemplo, "2:30 PM"), y la aplicación la convertirá internamente a un valor decimal para su procesamiento.

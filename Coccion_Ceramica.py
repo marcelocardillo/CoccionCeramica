@@ -28,8 +28,8 @@ if st.sidebar.button('Agregar Datos'):
 if 'data' in st.session_state:
     st.header('Gráfico de Temperatura de Cocción')
     chart = alt.Chart(st.session_state.data).mark_line(color='#0068c9').encode(
-        x='Hora:Q',
-        y='Temperatura:Q'
+        x='Temperatura:Q',  # Cambio en el eje X
+        y='Hora:Q'          # Cambio en el eje Y
     ).properties(height=500, width=500)
     st.altair_chart(chart)
 

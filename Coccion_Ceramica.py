@@ -1,33 +1,36 @@
+Para permitir que los usuarios ingresen la hora en formato AM o PM en lugar de la cantidad de horas, puedes utilizar un control de entrada de texto para la hora y luego convertir esa entrada en un valor numérico. Aquí tienes el código modificado:
+
+```python
 import streamlit as st
 import pandas as pd
 import altair as alt
-from collections import namedtuple
 
 # Título de la aplicación
 st.title('Gráfico de Temperatura de Cocción')
 
 # Sidebar con controles de entrada
 st.sidebar.header('Configuración de Datos')
-hora_inicio = st.sidebar.text_input('Hora de inicio de Cocción (ejemplo: 14.40):')
-hora_fin = st.sidebar.text_input('Hora de fin de Cocción (ejemplo: 16.15):')
 
-# Convertir la hora ingresada en formato decimal
-def convertir_hora_decimal(hora_texto):
+# Campo de entrada de hora en formato AM/PM
+hora_texto = st.sidebar.text_input('Hora de Cocción (ejemplo: 2:30 PM):')
+
+# Función para convertir la hora en formato AM/PM a decimal
+def convertir_hora_am_pm_a_decimal(hora_texto):
     try:
-        horas, minutos = map(float, hora_texto.split('.'))
-        return horas + minutos / 60
+        hora_obj = pd.to_datetime(hora_texto, format='%I:%M %p')
+        hora_decimal = hora_obj.hour + hora_obj.minute / 60
+        return hora_decimal
     except:
         return None
 
-hora_inicio_decimal = convertir_hora_decimal(hora_inicio)
-hora_fin_decimal = convertir_hora_decimal(hora_fin)
+hora_decimal = convertir_hora_am_pm_a_decimal(hora_texto)
 
 temperatura = st.sidebar.number_input('Temperatura de Cocción (en °C):', 0, 1500, 100)
 
 # Botón para agregar datos
 if st.sidebar.button('Agregar Datos'):
-    if hora_inicio_decimal is not None and hora_fin_decimal is not None:
-        data = {'Hora Inicio': [hora_inicio_decimal], 'Hora Fin': [hora_fin_decimal], 'Temperatura': [temperatura]}
+    if hora_decimal is not None:
+        data = {'Hora': [hora_decimal], 'Temperatura': [temperatura]}
         df = pd.DataFrame(data)
 
         # Si es la primera vez que se agrega un dato, creamos el DataFrame
@@ -41,7 +44,7 @@ if st.sidebar.button('Agregar Datos'):
 if 'data' in st.session_state:
     st.header('Gráfico de Temperatura de Cocción')
     chart = alt.Chart(st.session_state.data).mark_line(color='#0068c9').encode(
-        x='Hora Inicio:Q',
+        x='Hora:Q',  # Cambio en el eje X
         y='Temperatura:Q'
     ).properties(height=500, width=500)
     st.altair_chart(chart)
@@ -52,5 +55,8 @@ if 'data' in st.session_state:
         st.write(f'Media de Temperatura a partir de la segunda medición: {mean_temperature:.3f} °C')
 
     # Calcular el tiempo total de cocción en horas
-    total_cooking_time = st.session_state.data['Hora Fin'].max() - st.session_state.data['Hora Inicio'].min()
+    total_cooking_time = st.session_state.data['Hora'].max() - st.session_state.data['Hora'].min()
     st.write(f'Tiempo Total de Cocción en Horas: {total_cooking_time:.3f} horas')
+```
+
+Con este código, los usuarios pueden ingresar la hora en formato AM/PM (por ejemplo, "2:30 PM"), y la aplicación la convertirá internamente a un valor decimal para su procesamiento.

@@ -8,34 +8,22 @@ st.title('Gráfico de Temperatura de Cocción')
 # Sidebar con controles de entrada
 st.sidebar.header('Configuración de Datos')
 
-# Campo de entrada de hora en formato AM/PM
-hora_texto = st.sidebar.text_input('Hora de Cocción (ejemplo: 2:30 PM):')
-
-# Función para convertir la hora en formato AM/PM a decimal
-def convertir_hora_am_pm_a_decimal(hora_texto):
-    try:
-        hora_obj = pd.to_datetime(hora_texto, format='%I:%M %p')
-        hora_decimal = hora_obj.hour + hora_obj.minute / 60
-        return hora_decimal
-    except:
-        return None
-
-hora_decimal = convertir_hora_am_pm_a_decimal(hora_texto)
+# Campo de entrada de hora en formato numérico
+hora_decimal = st.sidebar.number_input('Hora de Cocción (en horas):', 0.0, 24.0, 0.0)
 
 temperatura = st.sidebar.number_input('Temperatura de Cocción (en °C):', 0, 1500, 100)
 
 # Botón para agregar datos
 if st.sidebar.button('Agregar Datos'):
-    if hora_decimal is not None:
-        data = {'Hora': [hora_decimal], 'Temperatura': [temperatura]}
-        df = pd.DataFrame(data)
+    data = {'Hora': [hora_decimal], 'Temperatura': [temperatura]}
+    df = pd.DataFrame(data)
 
-        # Si es la primera vez que se agrega un dato, creamos el DataFrame
-        if 'data' not in st.session_state:
-            st.session_state.data = df
-        else:
-            # Si ya existe el DataFrame, lo actualizamos agregando los nuevos datos
-            st.session_state.data = pd.concat([st.session_state.data, df], ignore_index=True)
+    # Si es la primera vez que se agrega un dato, creamos el DataFrame
+    if 'data' not in st.session_state:
+        st.session_state.data = df
+    else:
+        # Si ya existe el DataFrame, lo actualizamos agregando los nuevos datos
+        st.session_state.data = pd.concat([st.session_state.data, df], ignore_index=True)
 
 # Gráfico de línea con los datos ingresados
 if 'data' in st.session_state:

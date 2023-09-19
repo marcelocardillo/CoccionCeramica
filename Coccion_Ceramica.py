@@ -21,16 +21,18 @@ if st.sidebar.button('Agregar Datos'):
     # Si es la primera vez que se agrega un dato, creamos el DataFrame
     if 'data' not in st.session_state:
         st.session_state.data = df
+        y_min = temperatura  # Establecer el límite inferior del eje y
     else:
         # Si ya existe el DataFrame, lo actualizamos agregando los nuevos datos
         st.session_state.data = pd.concat([st.session_state.data, df], ignore_index=True)
+        y_min = min(st.session_state.data['Temperatura'])  # Actualizar el límite inferior del eje y
 
 # Gráfico de línea con los datos ingresados
 if 'data' in st.session_state:
     st.header('Gráfico de Temperatura de Cocción')
     chart = alt.Chart(st.session_state.data).mark_line(color='#0068c9').encode(
         x='Hora:Q',  # Cambio en el eje X
-        y='Temperatura:Q'
+        y=alt.Y('Temperatura:Q', scale=alt.Scale(domain=[y_min, 1500]))  # Personalizar el límite inferior del eje y
     ).properties(height=500, width=500)
     st.altair_chart(chart)
 

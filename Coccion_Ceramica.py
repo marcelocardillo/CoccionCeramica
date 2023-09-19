@@ -12,7 +12,7 @@ st.sidebar.header('Configuración de Datos')
 y_min = 0.0
 
 # Campo de entrada de hora en formato numérico
-hora_decimal = st.sidebar.number_input('Hora de Cocción (en horas):', 0.0, 24.0, 0.0)
+hora_decimal = st.sidebar.number_input('Tiempo de Cocción:', min_value=0.0, value=0.0, format="%f")
 
 temperatura = st.sidebar.number_input('Temperatura de Cocción (en °C):', 0, 1500, 100)
 

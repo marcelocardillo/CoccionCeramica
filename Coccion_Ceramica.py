@@ -8,6 +8,9 @@ st.title('Gráfico de Temperatura de Cocción')
 # Sidebar con controles de entrada
 st.sidebar.header('Configuración de Datos')
 
+# Inicializar y_min con un valor predeterminado
+y_min = 0.0
+
 # Campo de entrada de hora en formato numérico
 hora_decimal = st.sidebar.number_input('Hora de Cocción (en horas):', 0.0, 24.0, 0.0)
 

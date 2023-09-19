@@ -1,38 +1,34 @@
-from collections import namedtuple
-import altair as alt
-import math
-import pandas as pd
 import streamlit as st
+import pandas as pd
+import altair as alt
+from collections import namedtuple
+import math
 
-"""
-# Welcome to Streamlit!
+# Título de la aplicación
+st.title('Gráfico de Temperatura de Cocción')
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:
+# Sidebar con controles de entrada
+st.sidebar.header('Configuración de Datos')
+hora = st.sidebar.number_input('Hora de Cocción (en horas):', 0.0, 24.0, 0.0, step=0.5)
+temperatura = st.sidebar.number_input('Temperatura de Cocción (en °C):', 0, 300, 100)
 
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+# Botón para agregar datos
+if st.sidebar.button('Agregar Datos'):
+    data = {'Hora': [hora], 'Temperatura': [temperatura]}
+    df = pd.DataFrame(data)
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+    # Si es la primera vez que se agrega un dato, creamos el DataFrame
+    if 'data' not in st.session_state:
+        st.session_state.data = df
+    else:
+        # Si ya existe el DataFrame, lo actualizamos agregando los nuevos datos
+        st.session_state.data = pd.concat([st.session_state.data, df], ignore_index=True)
 
-
-with st.echo(code_location='below'):
-    total_points = st.slider("Number of points in spiral", 1, 5000, 2000)
-    num_turns = st.slider("Number of turns in spiral", 1, 100, 9)
-
-    Point = namedtuple('Point', 'x y')
-    data = []
-
-    points_per_turn = total_points / num_turns
-
-    for curr_point_num in range(total_points):
-        curr_turn, i = divmod(curr_point_num, points_per_turn)
-        angle = (curr_turn + 1) * 2 * math.pi * i / points_per_turn
-        radius = curr_point_num / total_points
-        x = radius * math.cos(angle)
-        y = radius * math.sin(angle)
-        data.append(Point(x, y))
-
-    st.altair_chart(alt.Chart(pd.DataFrame(data), height=500, width=500)
-        .mark_circle(color='#0068c9', opacity=0.5)
-        .encode(x='x:Q', y='y:Q'))
+# Gráfico de dispersión con los datos ingresados
+if 'data' in st.session_state:
+    st.header('Gráfico de Temperatura de Cocción')
+    chart = alt.Chart(st.session_state.data).mark_circle(color='#0068c9', opacity=0.5).encode(
+        x='Hora:Q',
+        y='Temperatura:Q'
+    ).properties(height=500, width=500)
+    st.altair_chart(chart)
